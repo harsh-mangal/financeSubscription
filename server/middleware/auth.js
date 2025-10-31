@@ -7,13 +7,16 @@ export function requireAuth(req, res, next) {
   if (!auth.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Missing Bearer token" });
   }
-  const token = auth.slice(7);
+  const token = auth.slice(7).trim(); // trim just in case
   try {
     const payload = jwt.verify(token, env.JWT_SECRET);
-    req.user = payload; // { id, role, name }
-    next();
+    req.user = payload; // { id, role, name, iat, exp }
+    return next();
   } catch (err) {
-    console.error("JWT verify failed:", err?.message);
+    console.error("JWT verify failed:", {
+      msg: err?.message,
+      tokenSample: token?.slice(0, 16) + "...",
+    });
     return res.status(401).json({ error: "Invalid or expired token" });
   }
 }

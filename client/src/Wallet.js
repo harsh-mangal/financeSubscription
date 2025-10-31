@@ -15,24 +15,26 @@ export default function Wallet({ token }) {
     setBalance(res.data.amount);
   }
 
-  async function addMoney(amount) {
-    setLoading(true);
-    try {
-      const t = token || localStorage.getItem("token"); // 👈 fallback
-      await axios.post(
-        `${API_BASE}/wallet/add-money/order`,
-        { amount },
-        { headers: { Authorization: `Bearer ${t}` } }
-      );
-      alert("Order created! Payment must complete via Razorpay webhook.");
-    } catch (e) {
-      console.error(e?.response?.data || e.message);
-      alert(e?.response?.data?.error || "Failed to create order");
-    } finally {
-      setLoading(false);
-      fetchBalance();
-    }
+async function addMoney(amount) {
+  setLoading(true);
+  try {
+    const t = (token || localStorage.getItem("token") || "").trim();
+    console.log("addMoney using token?", !!t, t?.slice(0, 16) + "...");
+    await axios.post(
+      `${API_BASE}/wallet/add-money/order`,
+      { amount },
+      { headers: { Authorization: `Bearer ${t}` } }
+    );
+    alert("Order created! Payment must complete via Razorpay webhook.");
+  } catch (e) {
+    console.error("addMoney error:", e?.response?.data || e.message);
+    alert(e?.response?.data?.error || "Failed to create order");
+  } finally {
+    setLoading(false);
+    fetchBalance();
   }
+}
+
 
   return (
     <div className="p-6 space-y-4">
