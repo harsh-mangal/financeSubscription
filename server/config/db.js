@@ -1,8 +1,16 @@
 import mongoose from "mongoose";
-import { env } from "./env.js";
+import dotenv from 'dotenv';
+dotenv.config();
 
-export async function connectDB() {
-  mongoose.set("strictQuery", true);
-  await mongoose.connect(env.MONGO_URI, { autoIndex: env.NODE_ENV === "development" });
-  console.log("✅ MongoDB connected");
-}
+export const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log("✅ MongoDB connected");
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err.message);
+    process.exit(1);
+  }
+};

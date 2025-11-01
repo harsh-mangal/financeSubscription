@@ -1,31 +1,49 @@
-// src/middleware/auth.js
 import jwt from "jsonwebtoken";
-import { env } from "../config/env.js";
+import { User } from "../model/user.js";
 
-export function requireAuth(req, res, next) {
-  const auth = req.headers.authorization || "";
-  if (!auth.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Missing Bearer token" });
-  }
-  const token = auth.slice(7).trim(); // trim just in case
+// ✅ For normal authenticated users
+export async function requireAuth(req, res, next) {
   try {
-    const payload = jwt.verify(token, env.JWT_SECRET);
-    req.user = payload; // { id, role, name, iat, exp }
-    return next();
+    const authHeader = req.headers.authorization || "";
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Missing Bearer token" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.userId = decoded.id;
+    next();
   } catch (err) {
-    console.error("JWT verify failed:", {
-      msg: err?.message,
-      tokenSample: token?.slice(0, 16) + "...",
-    });
     return res.status(401).json({ error: "Invalid or expired token" });
   }
 }
 
+// ✅ For admin users only
+export async function requireAdmin(req, res, next) {
+  try {
+    const authHeader = req.headers.authorization || "";
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Missing Bearer token" });
+    }
 
-export function requireRole(role) {
-  return (req, res, next) => {
-    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-    if (req.user.role !== role) return res.status(403).json({ error: "Forbidden" });
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // ✅ Find user and verify admin role
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.isAdmin) {
+      return res.status(403).json({ error: "Access denied. Admins only." });
+    }
+
+    req.userId = decoded.id;
+    req.user = user;
     next();
-  };
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
 }
