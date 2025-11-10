@@ -1,45 +1,322 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <title>FXPrime – Forex Trading Company</title>
+    <meta name="description" content="Trade Forex, commodities, and indices with low spreads, fast execution, and secure deposits. Login to your client panel or contact us for support." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='24' fill='%23111'%3E%3C/rect%3E%3Cpath d='M24 76l24-24 16 16 28-28' stroke='%23fff' stroke-width='10' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#eff6ff',
+                100: '#dbeafe',
+                500: '#2563eb',
+                600: '#1d4ed8',
+                700: '#1e40af'
+              }
+            },
+            boxShadow: {
+              glow: '0 0 0 6px rgba(37,99,235,0.15)'
+            }
+          }
+        }
+      }
+    </script>
 
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <!-- React + Babel (CDN) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <style>
+      /* Smooth card hover */
+      .card { transition: transform .2s ease, box-shadow .2s ease; }
+      .card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.08) }
+      /* Simple gradient bg */
+      .hero-bg { background: radial-gradient(1200px 600px at 80% -10%, rgba(37,99,235,.25), rgba(37,99,235,0)), linear-gradient(180deg, #0b1220, #0b1220); }
+    </style>
   </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+  <body class="bg-[#0b1220] text-white">
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+    <script type="text/babel">
+      const { useState } = React;
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+      function Logo() {
+        return (
+          <div className="flex items-center gap-2">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+              <rect x="2" y="2" width="20" height="20" rx="6" fill="#2563eb"/>
+              <path d="M6 14l4-4 3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="font-semibold tracking-tight">FXPrime</span>
+          </div>
+        )
+      }
+
+      function Nav({ current, onNavigate, onOpenLogin }) {
+        const [open, setOpen] = useState(false);
+        const link = (id, label) => (
+          <button
+            onClick={() => { onNavigate(id); setOpen(false); }}
+            className={
+              `px-3 py-2 rounded-md text-sm font-medium hover:bg-white/10 ` +
+              (current === id ? 'bg-white/10' : 'bg-transparent')
+            }
+          >{label}</button>
+        );
+
+        return (
+          <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/5 bg-white/5 border-b border-white/10">
+            <div className="max-w-6xl mx-auto px-4">
+              <div className="h-16 flex items-center justify-between">
+                <Logo />
+                <nav className="hidden md:flex items-center gap-1">
+                  {link('home','Home')}
+                  {link('about','About')}
+                  {link('services','Services')}
+                  {link('contact','Contact')}
+                </nav>
+                <div className="flex items-center gap-2">
+                  <button onClick={onOpenLogin} className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 px-4 py-2 rounded-lg text-sm font-semibold shadow-glow">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="-ml-1"><path d="M10 7h7m0 0v7m0-7L5 19" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
+                    Login
+                  </button>
+                  <button onClick={() => setOpen(!open)} className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg hover:bg-white/10">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
+                  </button>
+                </div>
+              </div>
+              {open && (
+                <div className="md:hidden pb-3 flex flex-col gap-1">
+                  {link('home','Home')}
+                  {link('about','About')}
+                  {link('services','Services')}
+                  {link('contact','Contact')}
+                </div>
+              )}
+            </div>
+          </header>
+        );
+      }
+
+      function Hero({ onCTA }) {
+        return (
+          <section id="home" className="hero-bg border-b border-white/10">
+            <div className="max-w-6xl mx-auto px-4 py-20">
+              <div className="grid md:grid-cols-2 gap-10 items-center">
+                <div>
+                  <p className="uppercase tracking-widest text-white/60 text-xs mb-3">Forex • Indices • Commodities</p>
+                  <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
+                    Trade Smart. Trade Secure. <span className="text-brand-500">FXPrime</span>
+                  </h1>
+                  <p className="mt-4 text-white/80 max-w-prose">
+                    Access 40+ currency pairs with low spreads, lightning-fast execution, and bank-grade security. Start with a demo or login to your client panel.
+                  </p>
+                  <div className="mt-6 flex gap-3">
+                    <a href="#services" className="px-5 py-3 rounded-lg bg-white text-gray-900 font-semibold hover:opacity-90">Explore Services</a>
+                    <button onClick={onCTA} className="px-5 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 font-semibold">Login</button>
+                  </div>
+                </div>
+                <div className="relative">
+                  <div className="absolute -inset-4 bg-gradient-to-tr from-brand-600/30 to-transparent blur-2xl rounded-3xl"></div>
+                  <div className="relative rounded-2xl border border-white/10 p-6 bg-white/5">
+                    <div className="grid grid-cols-2 gap-4">
+                      {["Low Spreads","Fast Execution","Secure Wallets","24/7 Support"].map((t,i)=> (
+                        <div key={i} className="card rounded-xl bg-black/30 border border-white/10 p-4">
+                          <p className="font-semibold">{t}</p>
+                          <p className="text-sm text-white/70">Best-in-class forex infrastructure for retail & pro traders.</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 text-xs text-white/60">*Trading involves risk. Please trade responsibly.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )
+      }
+
+      function About() {
+        return (
+          <section id="about" className="border-b border-white/10">
+            <div className="max-w-6xl mx-auto px-4 py-16">
+              <h2 className="text-2xl md:text-3xl font-bold">About Us</h2>
+              <p className="mt-4 text-white/80 max-w-3xl">
+                FXPrime empowers traders with reliable market access, transparent pricing, and robust risk tools. Our team blends years of market expertise with modern technology to provide a secure, intuitive trading experience.
+              </p>
+              <div className="mt-8 grid sm:grid-cols-3 gap-4">
+                {[{h:'Mission',p:'Empower traders through transparency & education.'},{h:'Vision',p:'A world where anyone can trade confidently.'},{h:'Values',p:'Integrity • Performance • Support'}].map((b,i)=> (
+                  <div key={i} className="card rounded-xl bg-white/5 border border-white/10 p-5">
+                    <h3 className="font-semibold">{b.h}</h3>
+                    <p className="text-white/70 text-sm mt-1">{b.p}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )
+      }
+
+      function Services() {
+        const items = [
+          { t: 'Forex Trading', d: '40+ pairs • tight spreads • deep liquidity.' },
+          { t: 'Commodities', d: 'Gold, Silver, Oil CFDs with flexible leverage.' },
+          { t: 'Indices & Stocks', d: 'Access global indices and leading equities.' },
+          { t: 'Copy Trading', d: 'Mirror strategies from vetted traders.' },
+          { t: 'Education', d: 'Webinars, tutorials, and beginner guides.' },
+        ];
+        return (
+          <section id="services" className="border-b border-white/10">
+            <div className="max-w-6xl mx-auto px-4 py-16">
+              <h2 className="text-2xl md:text-3xl font-bold">Services</h2>
+              <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {items.map((it, i) => (
+                  <div key={i} className="card rounded-2xl bg-white/5 border border-white/10 p-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">{it.t}</h3>
+                      <span className="text-xs px-2 py-1 rounded-full bg-white/10">#{String(i+1).padStart(2,'0')}</span>
+                    </div>
+                    <p className="text-white/75 mt-2 text-sm">{it.d}</p>
+                    <button className="mt-4 text-brand-100 hover:text-white text-sm inline-flex items-center gap-1">
+                      Learn more
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )
+      }
+
+      function Contact() {
+        return (
+          <section id="contact" className="border-b border-white/10">
+            <div className="max-w-6xl mx-auto px-4 py-16">
+              <h2 className="text-2xl md:text-3xl font-bold">Contact Us</h2>
+              <p className="text-white/80 mt-2">Have questions? Our team replies within 24 hours.</p>
+
+              <div className="mt-8 grid md:grid-cols-2 gap-6">
+                <form className="rounded-2xl bg-white/5 border border-white/10 p-6">
+                  <div className="grid gap-4">
+                    <div>
+                      <label className="text-sm text-white/70">Name</label>
+                      <input type="text" placeholder="Your name" className="mt-1 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none focus:ring-2 focus:ring-brand-600" />
+                    </div>
+                    <div>
+                      <label className="text-sm text-white/70">Email</label>
+                      <input type="email" placeholder="you@example.com" className="mt-1 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none focus:ring-2 focus:ring-brand-600" />
+                    </div>
+                    <div>
+                      <label className="text-sm text-white/70">Message</label>
+                      <textarea rows="4" placeholder="How can we help?" className="mt-1 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none focus:ring-2 focus:ring-brand-600"></textarea>
+                    </div>
+                    <button type="button" className="px-5 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 font-semibold">Send Message</button>
+                  </div>
+                </form>
+
+                <div className="rounded-2xl bg-white/5 border border-white/10 p-6">
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm text-white/60">Address</p>
+                      <p className="font-medium">Third Floor, Plot 95, Sector 82, JLPL Industrial Area, Mohali, Punjab 140306</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-white/60">Email</p>
+                      <a href="mailto:support@fxprime.com" className="font-medium hover:underline">support@fxprime.com</a>
+                    </div>
+                    <div>
+                      <p className="text-sm text-white/60">Phone</p>
+                      <a href="tel:+918968881110" className="font-medium hover:underline">+91 89688 81110</a>
+                    </div>
+                    <div className="text-sm text-white/60">* For compliance details and risk disclosure, see footer.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )
+      }
+
+      function Footer() {
+        return (
+          <footer className="py-10 text-sm text-white/60">
+            <div className="max-w-6xl mx-auto px-4">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <Logo />
+                <nav className="flex gap-4">
+                  <a href="#about" className="hover:text-white">About</a>
+                  <a href="#services" className="hover:text-white">Services</a>
+                  <a href="#contact" className="hover:text-white">Contact</a>
+                </nav>
+              </div>
+              <p className="mt-6">Risk Warning: CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.</p>
+              <p className="mt-2">© {new Date().getFullYear()} FXPrime. All rights reserved.</p>
+            </div>
+          </footer>
+        )
+      }
+
+      function LoginModal({ open, onClose }) {
+        if (!open) return null;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60" onClick={onClose}></div>
+            <div className="relative w-full max-w-md rounded-2xl bg-white text-gray-900 shadow-xl">
+              <div className="p-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">Client Login</h3>
+                  <button onClick={onClose} className="h-9 w-9 rounded-lg hover:bg-gray-100 grid place-items-center">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                  </button>
+                </div>
+                <form className="mt-4 grid gap-3">
+                  <div>
+                    <label className="text-sm text-gray-500">Email</label>
+                    <input type="email" placeholder="you@example.com" className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-600"/>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Password</label>
+                    <input type="password" placeholder="••••••••" className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-600"/>
+                  </div>
+                  <button type="button" className="mt-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold">Login</button>
+                  <p className="text-xs text-gray-500">By logging in you agree to our Terms & Privacy Policy.</p>
+                </form>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      function App() {
+        const [page, setPage] = useState('home');
+        const [loginOpen, setLoginOpen] = useState(false);
+
+        return (
+          <div>
+            <Nav current={page} onNavigate={setPage} onOpenLogin={() => setLoginOpen(true)} />
+            {page === 'home' && <Hero onCTA={() => setLoginOpen(true)} />}
+            {page === 'about' && <About />}
+            {page === 'services' && <Services />}
+            {page === 'contact' && <Contact />}
+            <Footer />
+            <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+          </div>
+        )
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
   </body>
 </html>
